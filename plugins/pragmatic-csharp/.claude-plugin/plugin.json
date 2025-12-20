@@ -1,0 +1,18 @@
+{
+  "name": "pragmatic-csharp",
+  "version": "0.1.0",
+  "description": "Rust-inspired pragmatic C# architecture principles: Result patterns, composition, vertical slices, and type-safe domain modeling",
+  "author": {
+    "name": "Phill",
+    "email": ""
+  },
+  "keywords": [
+    "csharp",
+    "architecture",
+    "ddd",
+    "functional",
+    "result-pattern",
+    "clean-architecture",
+    "vertical-slices"
+  ]
+}

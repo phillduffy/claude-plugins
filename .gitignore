@@ -1,0 +1,27 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+.idea/
+.vscode/
+*.sublime-*
+
+# Build artifacts
+*.zip
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*~
+
+# Dev/experimental folders
+*.x/

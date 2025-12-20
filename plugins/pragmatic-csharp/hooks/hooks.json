@@ -1,0 +1,17 @@
+{
+  "description": "Interactive architecture review prompts for C# code modifications",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if the tool modified a C# file (ends with .cs). If yes, respond with a brief reminder: 'C# code modified. Run /review-architecture when ready for architecture review.' If the file is not C#, respond with nothing.",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

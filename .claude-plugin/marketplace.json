@@ -1,0 +1,49 @@
+{
+  "name": "phillduffy-marketplace",
+  "owner": {
+    "name": "Phill Duffy",
+    "url": "https://github.com/phillduffy"
+  },
+  "metadata": {
+    "description": "Phill Duffy's marketplace for Claude Code extensions",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "pragmatic-dev-team",
+      "description": "16 specialized AI agents, 5 commands, and 12 skills for pragmatic C# development with Clean Architecture, DDD, and BDD practices.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Phill Duffy",
+        "url": "https://github.com/phillduffy"
+      },
+      "homepage": "https://github.com/phillduffy/claude-plugins",
+      "tags": ["development", "csharp", "architecture", "ddd", "bdd", "testing"],
+      "source": "./plugins/pragmatic-dev-team"
+    },
+    {
+      "name": "pragmatic-csharp",
+      "description": "Rust-inspired pragmatic C# architecture: Result patterns, composition, vertical slices, and type-safe domain modeling.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Phill Duffy",
+        "url": "https://github.com/phillduffy"
+      },
+      "homepage": "https://github.com/phillduffy/claude-plugins",
+      "tags": ["csharp", "architecture", "ddd", "functional", "result-pattern"],
+      "source": "./plugins/pragmatic-csharp"
+    },
+    {
+      "name": "vsto-development",
+      "description": "VSTO add-in development: COM interop patterns, Word object model, and build/deployment workflows.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Phill Duffy",
+        "url": "https://github.com/phillduffy"
+      },
+      "homepage": "https://github.com/phillduffy/claude-plugins",
+      "tags": ["vsto", "office", "word", "com-interop", "add-in"],
+      "source": "./plugins/vsto-development"
+    }
+  ]
+}

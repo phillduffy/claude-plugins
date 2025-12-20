@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if the modified file is a C# file (.cs extension). If yes, output a brief reminder: 'C# modified. Run /review when ready.' If not a C# file, output nothing.",
+            "timeout": 10000
+          }
+        ]
+      }
+    ]
+  }
+}

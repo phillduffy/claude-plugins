@@ -1,0 +1,24 @@
+{
+  "name": "pragmatic-dev-team",
+  "version": "1.0.0",
+  "description": "Ultimate C# development team with 16 specialized agents, 18 skills, and research-backed proactive triggering for the complete product lifecycle",
+  "author": {
+    "name": "Phill",
+    "email": ""
+  },
+  "keywords": [
+    "csharp",
+    "architecture",
+    "bdd",
+    "testing",
+    "code-review",
+    "security",
+    "accessibility",
+    "devops",
+    "documentation",
+    "vsto",
+    "clean-architecture",
+    "ddd",
+    "pragmatic-programmer"
+  ]
+}

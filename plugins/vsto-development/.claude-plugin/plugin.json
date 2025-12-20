@@ -1,0 +1,10 @@
+{
+  "name": "vsto-development",
+  "version": "0.1.0",
+  "description": "Specialized knowledge for VSTO add-in development: COM interop patterns, Word object model, and build/deployment workflows",
+  "author": {
+    "name": "Phill",
+    "email": "phill@example.com"
+  },
+  "keywords": ["vsto", "office", "word", "com-interop", "add-in", "msbuild"]
+}
