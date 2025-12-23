@@ -14,7 +14,7 @@ allowed-tools:
 
 # Technical Research Command
 
-On-demand technical research using the technical-researcher agent.
+On-demand technical research using the issue-specialist agent (research mode).
 
 ## Process
 
@@ -23,7 +23,7 @@ On-demand technical research using the technical-researcher agent.
    - Approach comparison: "caching strategies"
    - Build vs buy: "should I use X or build custom"
 
-2. **Launch technical-researcher agent** to:
+2. **Launch issue-specialist agent** to:
    - Identify candidates
    - Evaluate health metrics
    - Compare features

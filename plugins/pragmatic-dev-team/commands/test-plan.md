@@ -1,6 +1,6 @@
 ---
 name: test-plan
-description: Create test plan for a feature. Uses BDD strategist and test coverage analyst.
+description: Create test plan for a feature. Uses BDD strategist for scenarios, coverage, and exploratory testing.
 argument-hint: "[feature description] - What to create tests for"
 allowed-tools:
   - Read
@@ -12,23 +12,20 @@ allowed-tools:
 
 # Test Plan Command
 
-Create comprehensive test plan using BDD strategist and test coverage analyst.
+Create comprehensive test plan using bdd-strategist agent.
 
 ## Process
 
 1. **Understand the feature** from argument or context
 
 2. **Launch bdd-strategist agent** to:
-   - Identify scenarios (happy path, errors, edge cases)
+   - Define user story with acceptance criteria
    - Write Gherkin scenarios
-   - Suggest Three Amigos questions
+   - Analyze test coverage gaps
+   - Identify edge cases using testing heuristics
+   - Suggest exploratory testing charters
 
-3. **Launch test-coverage-analyst agent** to:
-   - Recommend test pyramid distribution
-   - Identify coverage gaps
-   - Suggest edge cases
-
-4. **Output complete test plan**
+3. **Output complete test plan**
 
 ## Examples
 

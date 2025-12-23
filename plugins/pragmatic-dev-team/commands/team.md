@@ -37,15 +37,14 @@ Comprehensive review using the team-coordinator to orchestrate multiple speciali
 /team ready for PR             # Pre-PR comprehensive check
 ```
 
-## Specialists Potentially Involved
+## Consolidated Specialists
 
 Depending on context:
-- Code Reviewer (always)
-- Architecture Reviewer (structural changes)
-- Security Reviewer (auth, data, input)
-- Test Coverage Analyst (if tests modified)
-- Accessibility Reviewer (UI changes)
-- BDD Strategist (new features)
+- **code-reviewer** - Quality, performance, observability, accessibility
+- **architecture-reviewer** - Design, refactoring, legacy code
+- **security-reviewer** - OWASP, vulnerabilities
+- **bdd-strategist** - Requirements, test coverage, exploratory testing
+- **issue-specialist** - Issues, research, build-vs-buy
 
 ## Output
 
