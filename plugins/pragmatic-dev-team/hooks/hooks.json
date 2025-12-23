@@ -8,6 +8,33 @@
             "type": "prompt",
             "prompt": "Check if the modified file is a C# file (.cs extension). If yes, output a brief reminder: 'C# modified. Run /review when ready.' If not a C# file, output nothing.",
             "timeout": 10000
+          },
+          {
+            "type": "prompt",
+            "prompt": "If a C# file (.cs) was modified: Output 'Build & test before claiming done: msbuild.exe -v:m && dotnet test'. If a .feature file was modified: Output 'Run scenario before claiming done: dotnet test --filter \"Category=X\"'. Otherwise output nothing.",
+            "timeout": 10000
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Agent task completed. Reminder: Verify agent claims independently. Don't trust 'success' reports without checking VCS diff or running tests yourself.",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If the command contains 'git commit': Check if build was verified in this conversation. If not, output 'STOP: Run msbuild and dotnet test before committing.' Otherwise output nothing.",
+            "timeout": 10000
           }
         ]
       }
