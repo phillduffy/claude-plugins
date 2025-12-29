@@ -4,23 +4,6 @@
   "description": "Process-enforcing C# dev team with 6 specialists, iron laws, gate functions, and anti-hallucination constraints",
   "author": {
     "name": "Phill Duffy",
-    "url": "https://github.com/phillduffy"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/phillduffy/pragmatic-dev-team"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/phillduffy/pragmatic-dev-team#readme",
-  "keywords": [
-    "csharp",
-    "architecture",
-    "bdd",
-    "vsto",
-    "ddd",
-    "clean-architecture",
-    "code-review",
-    "security",
-    "testing"
-  ]
+    "email": "phillduffy@gmail.com"
+  } 
 }
