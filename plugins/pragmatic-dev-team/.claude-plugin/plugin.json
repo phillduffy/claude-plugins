@@ -12,7 +12,6 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/phillduffy/pragmatic-dev-team#readme",
-  "bugs": "https://github.com/phillduffy/pragmatic-dev-team/issues",
   "keywords": [
     "csharp",
     "architecture",
@@ -23,8 +22,5 @@
     "code-review",
     "security",
     "testing"
-  ],
-  "engines": {
-    "claude-code": ">=1.0.0"
-  }
+  ]
 }
