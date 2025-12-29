@@ -29,6 +29,8 @@ assistant: "I'll use the architecture-reviewer to ensure clean boundaries"
 model: inherit
 color: yellow
 tools: ["Read", "Grep", "Glob", "Bash", "TodoWrite"]
+capabilities: ["architecture-review", "dependency-analysis", "refactoring", "legacy-code"]
+skills: ["csharp-pragmatic-architecture", "domain-driven-design"]
 ---
 
 <constraints>

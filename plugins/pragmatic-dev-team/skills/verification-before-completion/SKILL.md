@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing. Evidence before assertions always.
+description: Use when about to claim work is complete, fixed, or passing. Triggers when user says "done", "finished", "tests pass", "build succeeds", "ready for commit", "ready for PR", or makes any completion claim. Evidence before assertions always.
 ---
 
 # Verification Before Completion

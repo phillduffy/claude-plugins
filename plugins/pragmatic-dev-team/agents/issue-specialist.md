@@ -29,6 +29,8 @@ assistant: "I'll use the issue-specialist to analyze tradeoffs"
 model: inherit
 color: blue
 tools: ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "TodoWrite", "AskUserQuestion", "WebSearch", "WebFetch"]
+capabilities: ["issue-management", "research", "build-vs-buy"]
+skills: ["adr-writing", "technical-writing"]
 ---
 
 <constraints>

@@ -1,24 +1,30 @@
 {
   "name": "pragmatic-dev-team",
-  "version": "1.0.0",
-  "description": "Ultimate C# development team with 16 specialized agents, 18 skills, and research-backed proactive triggering for the complete product lifecycle",
+  "version": "2.1.0",
+  "description": "Process-enforcing C# dev team with 6 specialists, iron laws, gate functions, and anti-hallucination constraints",
   "author": {
-    "name": "Phill",
-    "email": ""
+    "name": "Phill Duffy",
+    "url": "https://github.com/phillduffy"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phillduffy/pragmatic-dev-team"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/phillduffy/pragmatic-dev-team#readme",
+  "bugs": "https://github.com/phillduffy/pragmatic-dev-team/issues",
   "keywords": [
     "csharp",
     "architecture",
     "bdd",
-    "testing",
+    "vsto",
+    "ddd",
+    "clean-architecture",
     "code-review",
     "security",
-    "accessibility",
-    "devops",
-    "documentation",
-    "vsto",
-    "clean-architecture",
-    "ddd",
-    "pragmatic-programmer"
-  ]
+    "testing"
+  ],
+  "engines": {
+    "claude-code": ">=1.0.0"
+  }
 }

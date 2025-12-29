@@ -29,6 +29,8 @@ assistant: "I'll use the team-coordinator to create a rollback strategy"
 model: inherit
 color: blue
 tools: ["Read", "Grep", "Glob", "Bash", "Task", "TodoWrite"]
+capabilities: ["orchestration", "release-planning", "session-management"]
+skills: ["team-orchestration", "devops-practices"]
 ---
 
 <constraints>

@@ -8,6 +8,7 @@ allowed-tools:
   - Glob
   - Bash
   - Task
+  - TodoWrite
 ---
 
 # Architecture Review Command

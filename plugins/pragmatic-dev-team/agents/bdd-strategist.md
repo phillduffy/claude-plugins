@@ -29,6 +29,8 @@ assistant: "I'll use the bdd-strategist to clarify user outcomes"
 model: inherit
 color: cyan
 tools: ["Read", "Grep", "Glob", "Bash", "AskUserQuestion", "TodoWrite"]
+capabilities: ["requirements", "test-strategy", "coverage-analysis", "exploratory-testing"]
+skills: ["bdd-patterns", "verification-before-completion"]
 ---
 
 <constraints>

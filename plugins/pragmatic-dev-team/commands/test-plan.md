@@ -8,6 +8,8 @@ allowed-tools:
   - Glob
   - Bash
   - Task
+  - TodoWrite
+  - AskUserQuestion
 ---
 
 # Test Plan Command

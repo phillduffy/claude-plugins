@@ -29,6 +29,8 @@ assistant: "I'll use the code-reviewer to audit against WCAG"
 model: inherit
 color: green
 tools: ["Read", "Grep", "Glob", "Bash", "TodoWrite"]
+capabilities: ["code-review", "performance-analysis", "observability", "accessibility"]
+skills: ["observability-patterns", "debugging-techniques"]
 ---
 
 <constraints>

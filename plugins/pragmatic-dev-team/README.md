@@ -1,5 +1,11 @@
 # pragmatic-dev-team
 
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Claude Code](https://img.shields.io/badge/claude--code->=1.0.0-green)
+![License](https://img.shields.io/badge/license-MIT-yellow)
+![Agents](https://img.shields.io/badge/agents-6-purple)
+![Skills](https://img.shields.io/badge/skills-13-orange)
+
 **Process-enforcing development team with iron laws, gate functions, and anti-hallucination constraints.**
 
 ## Overview
@@ -490,6 +496,32 @@ pragmatic-dev-team/
 ├── hooks/
 │   └── hooks.json              # PostToolUse hook for C# files
 └── README.md
+```
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Agent not triggering | Use explicit command: `/review`, `/architect`, `/test-plan` |
+| Hooks not working | Restart Claude Code, run `claude --debug` |
+| Skill not loading | Check SKILL.md frontmatter syntax |
+| Build check failing | Run: `msbuild -v:m && dotnet test` |
+| Stop hook blocking exit | Run build+tests to satisfy verification gate |
+| Security hook blocking | Legitimate ops get auto-approved; file contains sensitive patterns |
+
+### Debug Mode
+
+```bash
+# See hook execution, plugin loading, agent triggering
+claude --debug
+```
+
+### Validate Plugin Structure
+
+```bash
+# Load plugin and verify
+claude --plugin-dir E:\Claude\plugins\pragmatic-dev-team
+/help  # Should show /review, /architect, /test-plan, /research, /team
 ```
 
 ## Contributing

@@ -32,6 +32,8 @@ Explicit security question triggers comprehensive review.
 model: inherit
 color: red
 tools: ["Read", "Grep", "Glob", "Bash"]
+capabilities: ["security-review", "vulnerability-detection", "threat-modeling"]
+skills: []
 ---
 
 <role>
