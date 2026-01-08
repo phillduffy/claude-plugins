@@ -1,203 +1,224 @@
 ---
 name: Debugging Techniques
-description: This skill should be used when debugging issues, investigating bugs, troubleshooting errors, or applying systematic debugging approaches. Based on David Agans' "Debugging: The 9 Indispensable Rules" and practical debugging patterns.
-version: 0.1.0
+description: Use when debugging VSTO add-in issues, COM interop problems, Word automation failures, or systematic bug investigation. Covers add-in loading failures, manifest errors, RCW tracking, Office event logs, and VSTO runtime diagnostics.
+version: 0.2.0
+load: on-demand
 ---
 
 # Debugging Techniques
 
-Systematic approaches to finding and fixing bugs, based on David Agans' "Debugging: The 9 Indispensable Rules for Finding Even the Most Elusive Software and Hardware Problems".
+Systematic debugging for VSTO add-ins with Office-specific diagnostic patterns.
 
-## The 9 Rules
+## VSTO Add-in Loading Failures
 
-### 1. Understand the System
-Before debugging, know how it's supposed to work.
+### Check LoadBehavior Registry
 
-- Read the documentation
-- Understand the architecture
-- Know your tools (debugger, profiler, logs)
-- Understand the data flow
+```powershell
+# Check if add-in is enabled
+$path = "HKCU:\Software\Microsoft\Office\Word\Addins\YourAddIn"
+Get-ItemProperty -Path $path | Select LoadBehavior
 
-### 2. Make It Fail
-Consistent reproduction is essential.
+# LoadBehavior values:
+# 0 = Disabled (crashed)
+# 1 = Disabled by user
+# 2 = Enabled (load on startup)
+# 3 = Load on demand
+# 16 = Connected (COM add-in loaded)
 
+# Reset crashed add-in:
+Set-ItemProperty -Path $path -Name "LoadBehavior" -Value 3
 ```
-Can you make it fail?
-├── Yes, every time → Great, proceed
-├── Sometimes → Find the pattern (timing, data, sequence)
-└── Can't reproduce → Collect more data, different environment
+
+### VSTO Runtime Logging
+
+```powershell
+# Enable VSTO runtime logging
+$regPath = "HKCU:\Software\Microsoft\VSTO"
+New-Item -Path $regPath -Force
+Set-ItemProperty -Path $regPath -Name "EnableLogging" -Value 1
+Set-ItemProperty -Path $regPath -Name "LogFile" -Value "C:\temp\vsto.log"
+# Restart Word, reproduce issue, check log
 ```
 
-**Techniques:**
-- Start with exact failure conditions
-- Simplify step by step
-- Record what you change
-- Note what makes it better/worse
+### Manifest Validation
 
-### 3. Quit Thinking and Look
-Gather data instead of guessing.
+```bash
+# Check manifest for errors
+mage -verify YourAddIn.vsto
+
+# Common manifest errors:
+# - Certificate expired/untrusted
+# - Wrong deployment URL
+# - Missing dependency
+# - Version mismatch
+```
+
+## COM Interop Debugging
+
+### RCW Reference Tracking
 
 ```csharp
-// DON'T: Guess and change
-"Maybe it's a threading issue..." *changes code*
+// Track COM object lifecycle
+public static class ComDebug
+{
+    public static void TrackRelease(object comObj, string name)
+    {
+        if (comObj == null) return;
+        var remaining = Marshal.ReleaseComObject(comObj);
+        Debug.WriteLine($"[COM] Released {name}, refs remaining: {remaining}");
+    }
+}
 
-// DO: Add observation
-_logger.LogDebug("Value at checkpoint: {Value}", variable);
-// or use debugger breakpoint
+// Usage in debugging:
+var range = doc.Range(0, 10);
+// ... use range ...
+ComDebug.TrackRelease(range, "doc.Range");  // Should show 0
 ```
 
-**Ways to look:**
-- Debugger (breakpoints, watch)
-- Logging (structured, with context)
-- Metrics (timing, counts)
-- Traces (request flow)
+### Two-Dot Rule Violations
 
-### 4. Divide and Conquer
-Binary search through the problem space.
+```csharp
+// PROBLEM: Intermediate COM objects leak
+doc.Paragraphs[1].Range.Text = "Hello";  // 2 leaked objects!
 
-```
-System works end-to-end?
-├── Input correct? → Check processing
-├── Processing correct? → Check output
-└── Where does correct become incorrect? ← Found it
-```
+// DEBUG: Break into components to find leak
+var paragraphs = doc.Paragraphs;           // Track this
+var para = paragraphs[1];                  // Track this
+var range = para.Range;                    // Track this
+range.Text = "Hello";
 
-**Strategies:**
-- Start from a known good state
-- Find where behavior changes
-- Bisect commits (`git bisect`)
-- Comment out code blocks
-
-### 5. Change One Thing at a Time
-Rifle approach, not shotgun.
-
-```
-❌ Bad: Changed 5 things, now it works. Which one fixed it?
-✅ Good: Changed one thing, tested, recorded, repeat
+// Release in reverse order
+Marshal.ReleaseComObject(range);
+Marshal.ReleaseComObject(para);
+Marshal.ReleaseComObject(paragraphs);
 ```
 
-**Rules:**
-- Make one change
-- Test
-- If not fixed, revert
-- Record what you tried
+### Orphaned RCW Detection
 
-### 6. Keep an Audit Trail
-Document everything.
+```csharp
+// Force GC to find leaks (debugging only!)
+GC.Collect();
+GC.WaitForPendingFinalizers();
+GC.Collect();
+
+// Check for COM exceptions after this - indicates leaked objects
+```
+
+## Word Process Debugging
+
+### Attach to WINWORD.exe
+
+```
+Visual Studio → Debug → Attach to Process → WINWORD.exe
+- Enable "Managed" and "Native" code debugging
+- Set breakpoints in add-in code
+- Reproduce issue in Word
+```
+
+### Office Event Viewer Logs
+
+```powershell
+# Check Office-specific logs
+Get-WinEvent -LogName "OAlerts" -MaxEvents 20 |
+    Where-Object { $_.Message -like "*add-in*" }
+
+# Application log for crashes
+Get-WinEvent -LogName "Application" -MaxEvents 50 |
+    Where-Object { $_.ProviderName -eq "Microsoft Office" }
+```
+
+### ClickOnce Deployment Errors
+
+```powershell
+# Check ClickOnce cache
+Get-ChildItem "$env:LOCALAPPDATA\Apps\2.0" -Recurse -Filter "*.vsto"
+
+# Clear corrupted cache (last resort!)
+# rd /s /q "%LOCALAPPDATA%\Apps\2.0"
+```
+
+## Systematic Debugging (Agans' Rules Applied)
+
+### 1. Make It Fail Consistently
+
+```
+VSTO-specific reproduction:
+├── Fresh Word instance? (File → Exit, reopen)
+├── Same document type? (.docx vs .doc vs .dotx)
+├── Same user profile? (Admin vs standard)
+├── Same Office version? (32-bit vs 64-bit)
+└── Ribbon callback timing? (add delay to test)
+```
+
+### 2. Divide and Conquer
+
+```csharp
+// Isolate which layer fails
+public void DebugHandler()
+{
+    Debug.WriteLine("1. Handler entered");
+
+    var doc = Application.ActiveDocument;
+    Debug.WriteLine($"2. Got document: {doc != null}");
+
+    var range = doc.Range(0, 10);
+    Debug.WriteLine($"3. Got range: {range != null}");
+
+    range.Text = "Test";
+    Debug.WriteLine("4. Set text - SUCCESS");
+}
+// Check output to find where it breaks
+```
+
+### 3. Check the Plug (VSTO Edition)
+
+| "Plug" | Check Command |
+|--------|---------------|
+| Add-in loaded? | `Application.COMAddIns["YourAddIn"].Connect` |
+| Trust settings? | File → Options → Trust Center |
+| Correct Office bitness? | `IntPtr.Size == 4 ? "32-bit" : "64-bit"` |
+| Document protected? | `doc.ProtectionType != wdNoProtection` |
+| Macro security? | Trust Center → Macro Settings |
+
+## Common VSTO Bug Patterns
+
+| Pattern | Symptoms | Debug Approach |
+|---------|----------|----------------|
+| **Add-in disabled** | Ribbon missing | Check LoadBehavior registry |
+| **COM leak** | Word hangs on exit | RCW tracking, two-dot audit |
+| **Ribbon callback crash** | Button does nothing | Wrap in try-catch, check Output |
+| **Document timing** | Null reference | Check `Application.Documents.Count` |
+| **Cross-thread** | "Wrong thread" | Ensure UI thread for Office calls |
+| **Manifest trust** | Won't install | Check certificate, ClickOnce logs |
+
+## Quick Diagnostic Checklist
 
 ```markdown
-## Debugging Session: [Issue]
+## VSTO Debugging Session
 
-### Hypothesis 1: Database connection timeout
-- Tried: Increased timeout to 60s
-- Result: Still fails
-- Conclusion: Not timeout related
+### Environment
+- [ ] Office version: ___
+- [ ] Office bitness: 32/64
+- [ ] Add-in LoadBehavior: ___
 
-### Hypothesis 2: Race condition in initialization
-- Tried: Added lock around init
-- Result: Works!
-- Root cause: Confirmed
+### Reproduction
+- [ ] Consistent? Y/N
+- [ ] Document type: ___
+- [ ] User profile: ___
+
+### Checked
+- [ ] Event Viewer logs
+- [ ] VSTO runtime log enabled
+- [ ] LoadBehavior registry
+- [ ] Trust Center settings
+- [ ] COM object disposal
+
+### Findings
+- Root cause: ___
+- Fix: ___
 ```
 
-### 7. Check the Plug
-Look for simple, obvious problems first.
+## References
 
-**Common "plugs":**
-- Is it configured correctly?
-- Is the service running?
-- Is the database connected?
-- Are environment variables set?
-- Did deployment actually happen?
-- Is it the right version?
-
-### 8. Get a Fresh View
-Explain the problem to someone else.
-
-**Techniques:**
-- Rubber duck debugging
-- Ask a colleague
-- Write it down (often reveals the issue)
-- Take a break, come back fresh
-
-### 9. If You Didn't Fix It, It Ain't Fixed
-Verify the actual fix, not assumptions.
-
-```
-✅ Prove the fix:
-1. Reproduce the bug
-2. Apply fix
-3. Confirm bug is gone
-4. Verify fix addresses root cause
-5. Check for regressions
-```
-
-## Debugging Strategies
-
-### Binary Search (Git Bisect)
-```bash
-git bisect start
-git bisect bad HEAD
-git bisect good v1.0
-# Git checks out middle commit
-# Test, then:
-git bisect good  # or git bisect bad
-# Repeat until found
-```
-
-### Add Strategic Logging
-```csharp
-public Result<Order, Error> ProcessOrder(OrderRequest request)
-{
-    _logger.LogDebug("Processing order. Request={@Request}", request);
-
-    var validation = Validate(request);
-    _logger.LogDebug("Validation result. IsValid={IsValid}", validation.IsSuccess);
-
-    if (validation.IsFailure)
-    {
-        _logger.LogWarning("Validation failed. Error={Error}", validation.Error);
-        return validation.Error;
-    }
-
-    // Continue with logging at key decision points...
-}
-```
-
-### Minimal Reproduction
-```
-Start with failing case
-├── Remove components one by one
-├── Does it still fail?
-│   ├── Yes → Keep removing
-│   └── No → That component is involved
-└── Result: Smallest failing case
-```
-
-## Common Bug Patterns
-
-| Pattern | Symptoms | Check |
-|---------|----------|-------|
-| **Null reference** | NullReferenceException | Check initialization |
-| **Off-by-one** | Boundary failures | Check loop bounds |
-| **Race condition** | Intermittent failures | Check threading |
-| **State corruption** | Unexpected values | Check state mutations |
-| **Resource leak** | Gradual degradation | Check disposal |
-| **Configuration** | Works locally, fails elsewhere | Check environment |
-
-## Debugging Questions
-
-1. **What changed?** (Code, config, data, environment)
-2. **When did it start?** (Commit, deployment, time)
-3. **Who is affected?** (All users, some users, one user)
-4. **What's the pattern?** (Always, sometimes, specific conditions)
-5. **What does the data say?** (Logs, metrics, traces)
-
-## Anti-Patterns
-
-| Anti-Pattern | Problem | Alternative |
-|--------------|---------|-------------|
-| Shotgun debugging | Can't know what fixed it | One change at a time |
-| Cargo cult fixes | Copying fixes without understanding | Understand the cause |
-| Not documenting | Repeat investigations | Keep audit trail |
-| Assuming | Missing obvious causes | Look at the data |
-| Premature fixing | Fixing symptoms, not cause | Find root cause |
+- **`references/vsto-diagnostics.md`** - Extended diagnostic commands
+- **`references/com-debugging.md`** - Deep COM interop debugging

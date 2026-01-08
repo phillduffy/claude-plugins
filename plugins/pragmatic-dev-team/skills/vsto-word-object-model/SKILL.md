@@ -2,6 +2,7 @@
 name: Word Object Model Reference
 description: This skill should be used when the user asks about "Word.Document", "Word.Range", "Word.Selection", "Content Controls", "Word automation", "Word API", "Paragraphs collection", "Bookmarks", "Styles", "Find and Replace", "Headers and Footers", "Tables", "Sections", or any Word object model operations in VSTO add-ins.
 version: 0.1.0
+load: on-demand
 ---
 
 # Word Object Model Reference

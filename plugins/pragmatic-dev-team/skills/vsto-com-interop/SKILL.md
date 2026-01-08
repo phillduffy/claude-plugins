@@ -2,6 +2,7 @@
 name: VSTO COM Interop Patterns
 description: This skill should be used when the user asks about "COM cleanup", "Marshal.ReleaseComObject", "two-dot rule", "COM memory leaks", "Office interop", "Word automation", "RCW", "Runtime Callable Wrapper", or mentions COM object lifecycle management in VSTO add-ins. Provides patterns for safe COM object handling.
 version: 0.1.0
+load: on-demand
 ---
 
 # VSTO COM Interop Patterns

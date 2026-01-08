@@ -8,7 +8,7 @@ version: 0.2.0
 
 Rust-inspired pragmatic principles for C# architecture. These principles prioritize compile-time safety, explicit dependencies, and composition over inheritance. They reduce runtime bugs, simplify testing, and prevent over-engineering.
 
-## The 10 Core Principles
+## The 11 Core Principles
 
 | # | Principle | Core Idea |
 |---|-----------|-----------|
@@ -22,6 +22,7 @@ Rust-inspired pragmatic principles for C# architecture. These principles priorit
 | 8 | **YAGNI** | Solve current problem simply |
 | 9 | **Parse, Don't Validate** | Transform to trusted types at boundary |
 | 10 | **Options Pattern** | Strongly typed config with `IOptions<T>` |
+| 11 | **Maybe over null** | Return `Maybe<string>` never `string?` |
 
 ## 3 Meta-Principles (from Pragmatic Programmer & Code Complete)
 

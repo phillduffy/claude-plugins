@@ -1,212 +1,235 @@
 ---
 name: Observability Patterns
-description: This skill should be used when implementing logging, tracing, metrics, structured events, or monitoring. Also triggers for questions about OpenTelemetry, Serilog, Application Insights, or production debugging.
-version: 0.1.0
+description: Use when implementing logging, tracing, metrics, or monitoring in VSTO add-ins. Covers Serilog structured logging, OpenTelemetry .NET, Application Insights, and Office-specific diagnostic patterns (Event Viewer, VSTO runtime logs).
+version: 0.2.0
+load: on-demand
 ---
 
 # Observability Patterns
 
-Patterns for building observable systems that can be debugged in production.
+Production debugging for VSTO add-ins. Structured logging, tracing, and metrics.
 
-## Three Pillars (Traditional)
+## VSTO-Specific Logging
 
-| Pillar | Purpose | Example |
-|--------|---------|---------|
-| **Logs** | Discrete events | "User 123 logged in" |
-| **Metrics** | Aggregated numbers | "99th percentile latency: 200ms" |
-| **Traces** | Request flow | "Request touched services A→B→C" |
-
-## Modern View: High-Cardinality Events
-
-Rich structured events that contain all context needed to debug:
+### Write to Windows Event Log
 
 ```csharp
-_logger.LogInformation(
-    "Order processed. OrderId={OrderId} CustomerId={CustomerId} " +
-    "ItemCount={ItemCount} Total={Total} Duration={Duration}ms",
-    order.Id, customer.Id, order.Items.Count, order.Total, stopwatch.ElapsedMilliseconds);
+// Create source during installation (requires admin)
+if (!EventLog.SourceExists("MyWordAddin"))
+    EventLog.CreateEventSource("MyWordAddin", "Application");
+
+// Log during runtime
+EventLog.WriteEntry("MyWordAddin", 
+    $"Template applied. TemplateId={templateId}", 
+    EventLogEntryType.Information);
+```
+
+### Log File in User Profile
+
+```csharp
+// Safe location that doesn't require admin
+var logPath = Path.Combine(
+    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+    "MyWordAddin", "logs", "addin.log");
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+```
+
+### Output Window (Debug)
+
+```csharp
+// Visible in VS Output window when attached
+Debug.WriteLine($"[MyAddin] Document opened: {doc.Name}");
+System.Diagnostics.Trace.WriteLine($"Range modified: {range.Start}-{range.End}");
 ```
 
 ## Structured Logging (Serilog)
 
-### Setup
+### Setup for VSTO
+
 ```csharp
+// In ThisAddIn_Startup
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .Enrich.FromLogContext()
-    .Enrich.WithProperty("Application", "MyApp")
-    .WriteTo.Console(new JsonFormatter())
-    .WriteTo.Seq("http://localhost:5341")
+    .Enrich.WithProperty("AddIn", "MyWordAddin")
+    .Enrich.WithProperty("OfficeVersion", Application.Version)
+    .WriteTo.File(GetLogPath(), rollingInterval: RollingInterval.Day)
+    .WriteTo.Debug()  // VS Output window
     .CreateLogger();
 ```
 
-### Usage Patterns
+### Property Binding (Queryable)
 
-**Property binding (preferred):**
 ```csharp
-_logger.LogInformation("User {UserId} created order {OrderId}", userId, orderId);
+// GOOD: Properties are queryable
+Log.Information("Template applied. TemplateId={TemplateId} DocName={DocName}", 
+    templateId, doc.Name);
+
+// BAD: String interpolation - not queryable
+Log.Information($"Template applied. TemplateId={templateId} DocName={doc.Name}");
 ```
 
-**Object destructuring:**
+### Scoped Context
+
 ```csharp
-_logger.LogInformation("Processing order {@Order}", order); // Full object
-_logger.LogInformation("Processing order {$Order}", order); // ToString()
+// All logs in scope include DocumentId
+using (LogContext.PushProperty("DocumentId", doc.Name))
+{
+    Log.Information("Starting template application");
+    ApplyTemplate();
+    Log.Information("Template application complete");
+}
 ```
 
-**Scoped context:**
+## OpenTelemetry .NET
+
+### Setup
+
 ```csharp
-using (_logger.BeginScope(new Dictionary<string, object>
+// NuGet: OpenTelemetry, OpenTelemetry.Exporter.Console
+var tracerProvider = Sdk.CreateTracerProviderBuilder()
+    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+        .AddService("MyWordAddin"))
+    .AddSource("MyWordAddin")
+    .AddConsoleExporter()
+    .Build();
+
+private static readonly ActivitySource ActivitySource = new("MyWordAddin");
+```
+
+### Create Spans
+
+```csharp
+public void ApplyTemplate(Document doc, string templateId)
 {
-    ["CorrelationId"] = correlationId,
-    ["UserId"] = userId
-}))
-{
-    // All logs in this scope include CorrelationId and UserId
-    _logger.LogInformation("Processing started");
+    using var activity = ActivitySource.StartActivity("ApplyTemplate");
+    activity?.SetTag("templateId", templateId);
+    activity?.SetTag("docName", doc.Name);
+    
+    try
+    {
+        // Template application logic
+        activity?.SetStatus(ActivityStatusCode.Ok);
+    }
+    catch (Exception ex)
+    {
+        activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+        throw;
+    }
 }
 ```
 
 ## Log Levels
 
-| Level | When to Use | Example |
-|-------|-------------|---------|
-| **Critical** | System failure | "Database connection lost" |
-| **Error** | Failed operation | "Payment failed for order 123" |
-| **Warning** | Degraded but working | "Cache miss, falling back to DB" |
-| **Information** | Business events | "Order 123 shipped" |
-| **Debug** | Developer troubleshooting | "Query returned 42 rows" |
-| **Trace** | Detailed flow | "Entering ProcessOrder method" |
+| Level | When | VSTO Example |
+|-------|------|--------------|
+| **Critical** | Add-in can't function | "Failed to connect to Word" |
+| **Error** | Operation failed | "Template application failed" |
+| **Warning** | Degraded but working | "Cache miss, regenerating" |
+| **Information** | Business events | "Document saved with template" |
+| **Debug** | Developer troubleshooting | "Range: {Start}-{End}" |
 
-## What to Log
+## What to Log in VSTO
 
 ### Do Log
-- Business events (created, updated, deleted)
-- Errors with context
-- Performance data (duration, counts)
+- Document events (open, save, close)
+- Template applications
+- Ribbon command executions
+- COM exceptions
 - External service calls
-- Security events (login, access denied)
+- Performance (operation duration)
 
 ### Don't Log
-- Sensitive data (passwords, tokens, PII)
-- Every method entry/exit
-- Large objects
+- Document content (privacy)
+- Every Range operation (noise)
+- User credentials
 - High-frequency events without sampling
 
-## Correlation
+## Error Logging Pattern
 
-### Request Correlation
 ```csharp
-public class CorrelationMiddleware
+public Result<Unit, Error> ExecuteRibbonCommand(IRibbonControl control)
 {
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    var sw = Stopwatch.StartNew();
+    
+    try
     {
-        var correlationId = context.Request.Headers["X-Correlation-ID"].FirstOrDefault()
-            ?? Guid.NewGuid().ToString();
-
-        using (_logger.BeginScope(new { CorrelationId = correlationId }))
-        {
-            context.Response.Headers["X-Correlation-ID"] = correlationId;
-            await next(context);
-        }
+        Log.Debug("Command started. CommandId={CommandId}", control.Id);
+        
+        var result = DoWork();
+        
+        Log.Information("Command completed. CommandId={CommandId} Duration={Duration}ms",
+            control.Id, sw.ElapsedMilliseconds);
+        
+        return result;
+    }
+    catch (COMException ex)
+    {
+        Log.Error(ex, "COM error in command. CommandId={CommandId} HResult={HResult:X}",
+            control.Id, ex.HResult);
+        return DomainErrors.Command.ComFailed;
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Unexpected error. CommandId={CommandId}", control.Id);
+        throw;
     }
 }
 ```
 
-### Distributed Tracing
+## Metrics (RED Method)
+
 ```csharp
-// Pass correlation ID to downstream services
-httpClient.DefaultRequestHeaders.Add("X-Correlation-ID", correlationId);
-```
+// Rate - commands per minute
+private static readonly Counter<long> CommandCounter = 
+    Meter.CreateCounter<long>("commands.executed");
 
-## Metrics Patterns
+// Errors - failures
+private static readonly Counter<long> ErrorCounter = 
+    Meter.CreateCounter<long>("commands.failed");
 
-### RED Method (Request-driven)
-```csharp
-// Rate
-_requestCounter.Inc();
+// Duration - latency histogram
+private static readonly Histogram<double> Duration = 
+    Meter.CreateHistogram<double>("commands.duration");
 
-// Errors
-_errorCounter.Inc();
-
-// Duration
-using (_requestDuration.NewTimer())
+public void ExecuteCommand(string id)
 {
-    await ProcessRequest();
+    var sw = Stopwatch.StartNew();
+    try
+    {
+        DoWork();
+        CommandCounter.Add(1, new("command", id));
+    }
+    catch
+    {
+        ErrorCounter.Add(1, new("command", id));
+        throw;
+    }
+    finally
+    {
+        Duration.Record(sw.ElapsedMilliseconds, new("command", id));
+    }
 }
-```
-
-### USE Method (Resource-driven)
-```csharp
-// Utilization
-_cpuUtilization.Set(GetCpuPercent());
-
-// Saturation
-_queueDepth.Set(queue.Count);
-
-// Errors
-_connectionErrors.Inc();
-```
-
-## Common Patterns
-
-### Error Logging
-```csharp
-try
-{
-    await ProcessAsync();
-}
-catch (BusinessException ex)
-{
-    _logger.LogWarning(ex, "Business rule violation. Rule={Rule}", ex.Rule);
-    throw;
-}
-catch (Exception ex)
-{
-    _logger.LogError(ex, "Unexpected error processing request");
-    throw;
-}
-```
-
-### Performance Logging
-```csharp
-var sw = Stopwatch.StartNew();
-try
-{
-    var result = await _repository.GetAsync(id);
-    _logger.LogDebug("Repository query completed. Id={Id} Duration={Duration}ms",
-        id, sw.ElapsedMilliseconds);
-    return result;
-}
-finally
-{
-    _queryDuration.Record(sw.ElapsedMilliseconds);
-}
-```
-
-### Health Checks
-```csharp
-services.AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>()
-    .AddUrlGroup(new Uri("https://api.external.com/health"), "external-api");
 ```
 
 ## Anti-Patterns
 
-| Anti-Pattern | Problem | Solution |
-|--------------|---------|----------|
-| Log and throw | Duplicate logs | Log at handling point |
-| String interpolation | Can't query | Use structured logging |
-| Sensitive data | Security risk | Mask or exclude |
-| No correlation | Can't trace requests | Add correlation ID |
-| Log everything | Noise, cost | Log meaningful events |
+| Anti-Pattern | Problem | Fix |
+|--------------|---------|-----|
+| Log and throw | Duplicate logs | Log at handling point only |
+| String interpolation | Can't query | Use property binding |
+| Document content logged | Privacy violation | Log metadata only |
+| No correlation | Can't trace user session | Add SessionId to scope |
+| COM exceptions ignored | Silent failures | Always log HResult |
 
 ## Quick Reference
 
 | Need | Pattern |
 |------|---------|
-| Track request flow | Correlation ID |
-| Debug production | Structured logging |
-| Measure latency | Histogram metrics |
-| Count events | Counter metrics |
-| Alert on issues | Metrics + thresholds |
-| Trace across services | Distributed tracing |
+| Debug in production | Structured file logging |
+| Track user session | Push SessionId to LogContext |
+| Measure performance | Stopwatch + duration logging |
+| Find COM issues | Log ex.HResult in hex |
+| View during development | Debug.WriteLine + VS Output |

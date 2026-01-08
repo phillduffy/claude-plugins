@@ -2,6 +2,7 @@
 name: DevOps Practices
 description: This skill should be used when discussing CI/CD pipelines, DORA metrics, deployment automation, GitHub Actions, infrastructure as code, or DevOps culture. Based on "Accelerate" research and DevOps best practices.
 version: 0.1.0
+load: on-demand
 ---
 
 # DevOps Practices

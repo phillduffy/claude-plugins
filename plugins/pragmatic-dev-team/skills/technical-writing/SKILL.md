@@ -2,6 +2,7 @@
 name: Technical Writing
 description: This skill should be used when writing documentation, READMEs, developer guides, API documentation, or technical content. Based on "Docs for Developers" best practices and technical writing principles.
 version: 0.1.0
+load: on-demand
 ---
 
 # Technical Writing

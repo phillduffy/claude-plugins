@@ -1,6 +1,6 @@
 # pragmatic-dev-team
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.2.0-blue)
 ![Claude Code](https://img.shields.io/badge/claude--code->=1.0.0-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Agents](https://img.shields.io/badge/agents-6-purple)
@@ -506,7 +506,7 @@ pragmatic-dev-team/
 | Hooks not working | Restart Claude Code, run `claude --debug` |
 | Skill not loading | Check SKILL.md frontmatter syntax |
 | Build check failing | Run: `msbuild -v:m && dotnet test` |
-| Stop hook blocking exit | Run build+tests to satisfy verification gate |
+| Stop hook blocking exit | Run build+tests, OR say "force exit" to skip verification |
 | Security hook blocking | Legitimate ops get auto-approved; file contains sensitive patterns |
 
 ### Debug Mode
@@ -523,6 +523,22 @@ claude --debug
 claude --plugin-dir E:\Claude\plugins\pragmatic-dev-team
 /help  # Should show /review, /architect, /test-plan, /research, /team
 ```
+
+### Run Smoke Tests
+
+```powershell
+cd E:\Claude\plugins\pragmatic-dev-team\tests
+.\smoke-test.ps1
+```
+
+## Performance Optimizations (v2.1.1)
+
+| Optimization | Benefit |
+|--------------|---------|
+| **Skill lazy-loading** | `load: on-demand` reduces context consumption |
+| **Reduced hook timeouts** | 2-5s vs 5-30s, faster interactions |
+| **Parallel specialists** | team-coordinator runs code + architecture reviewers simultaneously |
+| **Stop hook escape** | "force exit" bypasses verification when stuck |
 
 ## Contributing
 

@@ -2,6 +2,7 @@
 name: ADR Writing
 description: This skill should be used when creating Architecture Decision Records, documenting decisions, capturing architectural rationale, or discussing ADR format. Based on Michael Nygard's ADR format and best practices.
 version: 0.1.0
+load: on-demand
 ---
 
 # Architecture Decision Records (ADRs)

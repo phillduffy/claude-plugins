@@ -2,6 +2,7 @@
 name: VSTO Build and Deployment
 description: This skill should be used when the user asks about "MSBuild VSTO", "dotnet build VSTO", "ClickOnce", "VSTO manifest", "Office add-in deployment", "VSTO signing", "add-in loading", "VSTO troubleshooting", "Office trust", "registry add-in", or any build, deployment, or configuration topics for VSTO projects.
 version: 0.1.0
+load: on-demand
 ---
 
 # VSTO Build and Deployment

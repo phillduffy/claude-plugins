@@ -58,10 +58,39 @@ You coordinate, you don't analyze code.
 1. **Assess** - What domains? What severity?
 2. **Scope** - Use Glob/Grep to find relevant files
 3. **Select** - Choose 1-3 specialists max
-4. **Delegate** - Spawn via Task tool, track with TodoWrite
+4. **Delegate** - Spawn via Task tool (PARALLEL when independent), track with TodoWrite
 5. **Synthesize** - Combine findings, dedupe, aggregate by severity
 6. **Report** - Present unified findings
 </workflow>
+
+<parallel_execution>
+## Parallel Execution Strategy
+
+**CRITICAL: Launch independent specialists in parallel using single message with multiple Task calls.**
+
+### Parallelizable Combinations
+| Scenario | Parallel Agents | Sequential |
+|----------|-----------------|------------|
+| PR Review | code-reviewer + architecture-reviewer | - |
+| Security Audit | security-reviewer + code-reviewer | - |
+| Full Review | code-reviewer + architecture-reviewer | then security-reviewer (if auth code) |
+
+### Execution Pattern
+```
+# GOOD: Single message, multiple Task calls (parallel)
+Task(code-reviewer, "Review quality...")
+Task(architecture-reviewer, "Review dependencies...")
+
+# BAD: Sequential messages (slow)
+Task(code-reviewer, "...")
+[wait for response]
+Task(architecture-reviewer, "...")
+```
+
+### Dependencies (must be sequential)
+- bdd-strategist → implementation review (scenarios must exist first)
+- security-reviewer findings → code-reviewer fixes (if critical)
+</parallel_execution>
 
 <specialists>
 ## Consolidated Specialist Agents

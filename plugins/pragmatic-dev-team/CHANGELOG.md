@@ -2,7 +2,28 @@
 
 All notable changes to pragmatic-dev-team will be documented here.
 
-## [2.1.0] - 2025-01-XX
+## [2.2.0] - 2025-01-05
+
+### Changed
+- **debugging-techniques** - Now VSTO-specific (LoadBehavior, VSTO logs, COM debugging)
+- **observability-patterns** - Added OpenTelemetry, VSTO logging patterns, Event Log
+- **team-orchestration** - Reduced 345→94 lines, moved examples to references
+
+### Added
+- team-orchestration/references/workflow-examples.md
+
+## [2.1.1] - 2025-01-05
+
+### Added
+- **Smoke tests** - Automated validation (`tests/smoke-test.ps1`)
+- **Parallel execution** - team-coordinator spawns specialists simultaneously
+- **Escape hatch** - "force exit" bypasses Stop hook verification
+
+### Changed
+- **Skill lazy-loading** - All skills have `load: on-demand`
+- **Optimized hooks** - Reduced timeouts from 5-30s to 2-5s
+
+## [2.1.0] - 2024-12-29
 
 ### Added
 - **SessionStart hook** - Detects C# solutions on session start

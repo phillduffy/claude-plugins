@@ -2,6 +2,7 @@
 name: C# Pragmatic Architecture
 description: This skill should be used when designing C# classes, reviewing architecture decisions, implementing domain logic, or when the user asks about "Result pattern", "value objects", "vertical slices", "composition over inheritance", "dependency injection", "functional core", "parse don't validate", "illegal states", "YAGNI", "IOptions pattern", "DRY", "broken windows", or "technical debt". Also triggers when writing handlers, aggregates, decorators, or domain primitives.
 version: 0.2.0
+load: on-demand
 ---
 
 # C# Pragmatic Architecture

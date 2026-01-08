@@ -2,6 +2,7 @@
 name: Domain-Driven Design
 description: This skill should be used when discussing bounded contexts, aggregates, entities, value objects, domain events, ubiquitous language, repositories, domain services, or strategic DDD patterns. Also triggers for questions about DDD, domain modeling, or Eric Evans' patterns.
 version: 0.1.0
+load: on-demand
 ---
 
 # Domain-Driven Design

@@ -2,6 +2,7 @@
 name: BDD Patterns
 description: This skill should be used when writing Gherkin scenarios, Given-When-Then syntax, feature files, step definitions, scenario outlines, or Reqnroll/SpecFlow/Cucumber patterns. Also triggers for questions about BDD, behavior-driven development, or specification by example.
 version: 0.1.0
+load: on-demand
 ---
 
 # BDD Patterns
