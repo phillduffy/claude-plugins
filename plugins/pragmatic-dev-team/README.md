@@ -1,6 +1,6 @@
 # pragmatic-dev-team
 
-![Version](https://img.shields.io/badge/version-2.2.0-blue)
+![Version](https://img.shields.io/badge/version-2.3.0-blue)
 ![Claude Code](https://img.shields.io/badge/claude--code->=1.0.0-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Agents](https://img.shields.io/badge/agents-6-purple)
@@ -50,6 +50,7 @@ cp -r E:\Claude\plugins\pragmatic-dev-team <your-project>/.claude/plugins/
 # /test-plan - Create BDD test plan for feature
 # /research - Technical research and evaluation
 # /team - Comprehensive team review or session summary
+# /reflect - Structured session reflection and learning extraction
 ```
 
 ## Core Concepts

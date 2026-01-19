@@ -2,6 +2,11 @@
 
 All notable changes to pragmatic-dev-team will be documented here.
 
+## [2.3.0] - 2026-01-19
+
+### Added
+- **/reflect command** - Structured session reflection and learning extraction for improved future collaboration
+
 ## [2.2.0] - 2025-01-05
 
 ### Changed
@@ -69,5 +74,5 @@ All notable changes to pragmatic-dev-team will be documented here.
 
 - 16 specialized agents
 - 13+ domain skills
-- 5 slash commands
+- 7 slash commands
 - Basic PostToolUse hooks
